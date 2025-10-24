@@ -115,7 +115,7 @@ async function start() {
                     Matrix.sendMessage(Matrix.user.id, { 
                         image: { url: "https://files.catbox.moe/w5xf3f.jpg" }, 
                         caption: `╭─────────────━┈⊷
-│ ᴘᴏᴘᴋɪᴅ xᴛᴇᴄʜ
+│ Dach X Tech
 ╰─────────────━┈⊷
 
 ╭─────────────━┈⊷
@@ -123,7 +123,7 @@ async function start() {
 │ ᴘʟᴇᴀsᴇ ғᴏʟʟᴏᴡ ᴜs ʙᴇʟᴏᴡ
 ╰─────────────━┈⊷
 
-> *ᴍᴀᴅᴇ ʙʏ ᴘᴏᴘᴋɪᴅ*`
+> *ᴍᴀᴅᴇ ʙʏ Dach King*`
                     });
                     initialConnection = false;
                 } else {
