@@ -1,1 +1,14 @@
-
+name: queen-hani-gtd
+services:
+  - name: queen-hani-service
+    type: web
+    ports:
+      - 5000
+    routes:
+      - path: "/"
+    build:
+      type: docker
+      dockerfile: ./Dockerfile
+    regions:
+      - fra
+      - sin
