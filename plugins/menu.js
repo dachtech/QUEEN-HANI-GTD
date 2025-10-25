@@ -46,128 +46,126 @@ const menu = async (m, Matrix) => {
 
   if (validCommands.includes(cmd)) {
     const str = `
-╭───────────────╮
-│ *${config.BOT_NAME.toUpperCase()} v3.1.0* │
-╰───────────────╯
-👑 Owner: ${config.OWNER_NAME}
-🙋‍♂️ User: ${m.pushName}
-⚙️ Mode: ${mode}
-💻 Platform: ${os.platform()}
-💙 Prefix: ${prefix}
-📅 ${dateNow} | 🕐 ${timeNow}
-─────────────────────
-${wish}, ${m.pushName}!
-🕒 Uptime: ${day}d ${hours}h ${minutes}m ${seconds}s
-💾 RAM: ${formatBytes(totalMemoryBytes - freeMemoryBytes)} / ${formatBytes(totalMemoryBytes)}
-─────────────────────
+╭─⊷${config.BOT_NAME.toUpperCase()}─
+│▢ Owner: ${config.OWNER_NAME}
+│▢ Version: 3.1.0
+│▢ Mode: ${mode}
+│▢ Prefix: ${prefix}
+│▢ Platform: ${os.platform()}
+│▢ Date: ${dateNow}
+│▢ Time: ${timeNow}
+│▢ RAM: ${formatBytes(totalMemoryBytes - freeMemoryBytes)} / ${formatBytes(totalMemoryBytes)}
+│▢ Uptime: ${day}d ${hours}h ${minutes}m ${seconds}s
+╰────────────
 
-╭─「 📥 DOWNLOAD 」─╮
-│ apk
-│ facebook
-│ mediafire
-│ pinterestdl
-│ gitclone
-│ gdrive
-│ insta
-│ ytmp3
-│ ytmp4
-│ play
-│ song
-│ video
-│ tiktok
-╰───────────────────╯
+╭─⊷📥DOWNLOAD-CMD─
+│ • apk
+│ • facebook
+│ • mediafire
+│ • pinterestdl
+│ • gitclone
+│ • gdrive
+│ • insta
+│ • ytmp3
+│ • ytmp4
+│ • play
+│ • song
+│ • video
+│ • tiktok
+╰────────────
 
-╭─「 🧭 CONVERTER 」─╮
-│ attp
-│ attp2
-│ attp3
-│ ebinary
-│ dbinary
-│ emojimix
-│ mp3
-╰────────────────────╯
+╭─⊷🧭CONVERTER-CMD─
+│ • attp
+│ • attp2
+│ • attp3
+│ • ebinary
+│ • dbinary
+│ • emojimix
+│ • mp3
+╰────────────
 
-╭─「 🤖 AI 」─╮
-│ ai
-│ dalle
-│ remini
-│ gemini
-│ gpt
-│ bug
-│ report
-╰────────────╯
+╭─⊷🤖AI-CMD─
+│ • ai
+│ • dalle
+│ • remini
+│ • gemini
+│ • gpt
+│ • bug
+│ • report
+╰────────────
 
-╭─「 🧰 TOOLS 」─╮
-│ calculator
-│ tempmail
-│ checkmail
-│ trt
-│ tts
-╰─────────────╯
+╭─⊷🧰TOOLS-CMD─
+│ • calculator
+│ • tempmail
+│ • checkmail
+│ • trt
+│ • tts
+╰────────────
 
-╭─「 👥 GROUP 」─╮
-│ linkgroup
-│ setppgc
-│ setname
-│ setdesc
-│ group
-│ welcome
-│ add
-│ kick
-│ tagall
-│ antilink
-│ promote
-│ demote
-│ getbio
-╰───────────────╯
+╭─⊷👥GROUP-CMD─
+│ • linkgroup
+│ • setppgc
+│ • setname
+│ • setdesc
+│ • group
+│ • welcome
+│ • add
+│ • kick
+│ • tagall
+│ • antilink
+│ • promote
+│ • demote
+│ • getbio
+╰────────────
 
-╭─「 🔍 SEARCH 」─╮
-│ play
-│ yts
-│ imdb
-│ google
-│ gimage
-│ pinterest
-│ wallpaper
-│ lyrics
-╰────────────────╯
+╭─⊷🔍SEARCH-CMD─
+│ • play
+│ • yts
+│ • imdb
+│ • google
+│ • gimage
+│ • pinterest
+│ • wallpaper
+│ • lyrics
+╰────────────
 
-╭─「 🏠 MAIN 」─╮
-│ ping
-│ alive
-│ owner
-│ menu
-│ infobot
-╰───────────────╯
+╭─⊷🏠MAIN-CMD─
+│ • ping
+│ • alive
+│ • owner
+│ • menu
+│ • infobot
+╰────────────
 
-╭─「 👑 OWNER 」─╮
-│ join
-│ leave
-│ block
-│ unblock
-│ setppbot
-│ anticall
-│ setstatus
-│ autotyping
-│ alwaysonline
-│ autoread
-│ autosview
-╰──────────────╯
+╭─⊷👑OWNER-CMD─
+│ • join
+│ • leave
+│ • block
+│ • unblock
+│ • setppbot
+│ • anticall
+│ • setstatus
+│ • autotyping
+│ • alwaysonline
+│ • autoread
+│ • autosview
+╰────────────
 
-╭─「 🕵️ STALK 」─╮
-│ truecaller
-│ instastalk
-│ githubstalk
-╰────────────────╯
+╭─⊷🕵️STALK-CMD─
+│ • truecaller
+│ • instastalk
+│ • githubstalk
+╰────────────
 
-─────────────────────
-💬 *${config.DESCRIPTION}*
-─────────────────────
-Made with ❤️ by *DACH × TECH*
-─────────────────────
+
+╭─『 💫 ABOUT 💫 』─
+│ 💬 ${config.DESCRIPTION}
+│ 💞 Crafted with love by *DACH × TECH*
+│ 🌸 ${wish}, ${m.pushName}! 🌸
+╰────────────
 `;
 
-    // ─── Custom Menu Image ───────────────────────────────
+    // ─── Menu Image ───────────────────────────────
     const imageUrl = 'https://files.catbox.moe/dgunsg.jpg';
     let menuImage;
 
