@@ -19,7 +19,7 @@ import moment from 'moment-timezone';
 import axios from 'axios';
 import config from './config.cjs';
 import pkg from './lib/autoreact.cjs';
-import { File } from 'megajs'; // ✅ MEGA import added
+import { File } from 'megajs';
 
 const { emojis, doReact } = pkg;
 
@@ -32,7 +32,7 @@ let initialConnection = true;
 const PORT = process.env.PORT || 3000;
 
 const MAIN_LOGGER = pino({
-    timestamp: () => ,"time":"${new Date().toJSON()}"
+    timestamp: () => `,"time":"${new Date().toJSON()}"`
 });
 const logger = MAIN_LOGGER.child({});
 logger.level = "trace";
@@ -40,7 +40,7 @@ logger.level = "trace";
 const msgRetryCounterCache = new NodeCache();
 
 const __filename = new URL(import.meta.url).pathname;
-const _dirname = path.dirname(_filename);
+const __dirname = path.dirname(__filename);
 
 const sessionDir = path.join(__dirname, 'session');
 const credsPath = path.join(sessionDir, 'creds.json');
@@ -49,7 +49,6 @@ if (!fs.existsSync(sessionDir)) {
     fs.mkdirSync(sessionDir, { recursive: true });
 }
 
-// ✅ Replaced Pastebin session logic with MEGA-based version
 async function downloadSessionData() {
   try {
     const sessionId = config.SESSION_ID;
@@ -65,7 +64,7 @@ async function downloadSessionData() {
     }
 
     const [fileId, fileKey] = filePart.split('#');
-    const megaFile = File.fromURL(https://mega.nz/file/${fileId}#${fileKey});
+    const megaFile = File.fromURL(`https://mega.nz/file/${fileId}#${fileKey}`);
 
     console.log("🔄 Downloading session from MEGA...");
     const fileData = await new Promise((resolve, reject) => {
@@ -76,7 +75,7 @@ async function downloadSessionData() {
     console.log(chalk.green("✅ Session restored from MEGA."));
     return true;
   } catch (err) {
-    console.error(chalk.red(❌ Session download error: ${err.message}));
+    console.error(chalk.red(`❌ Session download error: ${err.message}`));
     return false;
   }
 }
@@ -85,7 +84,7 @@ async function start() {
     try {
         const { state, saveCreds } = await useMultiFileAuthState(sessionDir);
         const { version, isLatest } = await fetchLatestBaileysVersion();
-        console.log(popkid using WA v${version.join('.')}, isLatest: ${isLatest});
+        console.log(`popkid using WA v${version.join('.')}, isLatest: ${isLatest}`);
 
         const Matrix = makeWASocket({
             version,
@@ -94,10 +93,6 @@ async function start() {
             browser: ["demon", "safari", "3.3"],
             auth: state,
             getMessage: async (key) => {
-                if (store) {
-                    const msg = await store.loadMessage(key.remoteJid, key.id);
-                    return msg.message || undefined;
-                }
                 return { conversation: "popkid whatsapp user bot" };
             }
         });
@@ -139,7 +134,7 @@ async function start() {
 
         if (config.MODE === "public") {
             Matrix.public = true;
-        } else if (config.MODE === "private") {
+        } else {
             Matrix.public = false;
         }
 
@@ -186,5 +181,5 @@ app.get('/', (req, res) => {
 });
 
 app.listen(PORT, () => {
-    console.log(Server is running on port ${PORT});
+    console.log(`Server is running on port ${PORT}`);
 });
