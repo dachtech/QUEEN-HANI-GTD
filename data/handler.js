@@ -1,60 +1,89 @@
-import moment from 'moment-timezone';
+import { serialize, decodeJid } from '../lib/Serializer.js';
+import path from 'path';
+import fs from 'fs/promises';
 import config from '../config.cjs';
-export default async function GroupParticipants(sock, { id, participants, action }) {
-   try {
-      const metadata = await sock.groupMetadata(id)
+import { smsg } from '../lib/myfunc.cjs';
+import { handleAntilink } from './antilink.js';
+import { fileURLToPath } from 'url';
 
-      // participants
-      for (const jid of participants) {
-         // get profile picture user
-         let profile
-         try {
-            profile = await sock.profilePictureUrl(jid, "image")
-         } catch {
-            profile = "https://lh3.googleusercontent.com/proxy/esjjzRYoXlhgNYXqU8Gf_3lu6V-eONTnymkLzdwQ6F6z0MWAqIwIpqgq_lk4caRIZF_0Uqb5U8NWNrJcaeTuCjp7xZlpL48JDx-qzAXSTh00AVVqBoT7MJ0259pik9mnQ1LldFLfHZUGDGY=w1200-h630-p-k-no-nu"
-         }
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
-         // action
-         if (action == "add" && config.WELCOME ) {
-           const userName = jid.split("@")[0];
-                    const joinTime = moment.tz('Asia/Kolkata').format('HH:mm:ss');
-                    const joinDate = moment.tz('Asia/Kolkata').format('DD/MM/YYYY');
-                    const membersCount = metadata.participants.length;
-            sock.sendMessage(id, {
-               text: `> Hello @${userName}! Welcome to *${metadata.subject}*.\n> You are the ${membersCount}th member.\n> Joined at: ${joinTime} on ${joinDate}
-"`, contextInfo: {
-                  mentionedJid: [jid],
-                  externalAdReply: {
-                     title: `Welcome`,
-                     mediaType: 1,
-                     previewType: 0,
-                     renderLargerThumbnail: true,
-                     thumbnailUrl: metadata.subject,
-                     sourceUrl: 'https://sid-bhai.vercel.app'
-                  }
-               }
-            })
-         } else if (action == "remove" && config.WELCOME ) {
-           const userName = jid.split('@')[0];
-                    const leaveTime = moment.tz('Asia/Kolkata').format('HH:mm:ss');
-                    const leaveDate = moment.tz('Asia/Kolkata').format('DD/MM/YYYY');
-                    const membersCount = metadata.participants.length;
-            sock.sendMessage(id, {
-               text: `> Goodbye @${userName} from ${metadata.subject}.\n> We are now ${membersCount} in the group.\n> Left at: ${leaveTime} on ${leaveDate}"`, contextInfo: {
-                  mentionedJid: [jid],
-                  externalAdReply: {
-                     title: `Leave`,
-                     mediaType: 1,
-                     previewType: 0,
-                     renderLargerThumbnail: true,
-                     thumbnailUrl: profile,
-                     sourceUrl: 'https://sid-bhai.vercel.app'
-                  }
-               }
-            })
-         }
-      }
-   } catch (e) {
-      throw e
-   }
-}
+// ✅ Function to get group admins
+export const getGroupAdmins = (participants = []) => {
+    return participants
+        .filter(p => p.admin === 'superadmin' || p.admin === 'admin')
+        .map(p => p.id);
+};
+
+const Handler = async (chatUpdate, sock, logger) => {
+    try {
+        if (chatUpdate.type !== 'notify') return;
+
+        const m = serialize(JSON.parse(JSON.stringify(chatUpdate.messages[0])), sock, logger);
+        if (!m.message) return;
+
+        // ✅ FIXED groupMetadata call
+        let participants = [];
+        if (m.isGroup) {
+            const groups = await sock.groupFetchAllParticipating();
+            const metadata = groups[m.from];
+            participants = metadata ? metadata.participants : [];
+        }
+
+        const groupAdmins = m.isGroup ? getGroupAdmins(participants) : [];
+        const botId = sock.user.id.split(':')[0] + '@s.whatsapp.net';
+        const isBotAdmins = m.isGroup ? groupAdmins.includes(botId) : false;
+        const isAdmins = m.isGroup ? groupAdmins.includes(m.sender) : false;
+
+        // ✅ Command prefix handling
+        const PREFIX = /^[\\/!#.]/;
+        const isCOMMAND = PREFIX.test(m.body);
+        const prefixMatch = isCOMMAND ? m.body.match(PREFIX) : null;
+        const prefix = prefixMatch ? prefixMatch[0] : '/';
+        const cmd = m.body.startsWith(prefix)
+            ? m.body.slice(prefix.length).split(' ')[0].toLowerCase()
+            : '';
+        const text = m.body.slice(prefix.length + cmd.length).trim();
+
+        // ✅ Better owner & creator check
+        const botNumber = await sock.decodeJid(sock.user.id);
+        const ownerNumber = config.OWNER_NUMBER + '@s.whatsapp.net';
+        const isCreator = [ownerNumber, botNumber].includes(m.sender);
+
+        // ✅ Check public/private mode
+        if (!sock.public && !isCreator) return;
+
+        // ✅ Run Antilink
+        await handleAntilink(m, sock, logger, isBotAdmins, isAdmins, isCreator);
+
+        // ✅ Load and execute plugins
+        const pluginDir = path.resolve(__dirname, '..', 'plugins');
+
+        try {
+            const pluginFiles = await fs.readdir(pluginDir);
+
+            for (const file of pluginFiles) {
+                if (!file.endsWith('.js')) continue;
+                const pluginPath = path.join(pluginDir, file);
+
+                try {
+                    const pluginModule = await import(`file://${pluginPath}`);
+                    const runPlugin = pluginModule.default;
+                    if (typeof runPlugin === 'function') {
+                        await runPlugin(m, sock);
+                    }
+                } catch (err) {
+                    console.error(`❌ Failed to load plugin: ${pluginPath}`, err);
+                }
+            }
+        } catch (err) {
+            console.error(`❌ Plugin folder not found: ${pluginDir}`, err);
+        }
+
+    } catch (err) {
+        console.error('❌ Handler Error:', err);
+    }
+};
+
+export default Handler;
