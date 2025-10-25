@@ -27,7 +27,8 @@ const config = {
   OWNER_NAME: process.env.OWNER_NAME || "Dach Dev",
   OWNER_NUMBER: process.env.OWNER_NUMBER || "256780799501",
   GEMINI_KEY: process.env.GEMINI_KEY || "AIzaSyCUPaxfIdZawsKZKqCqJcC-GWiQPCXKTDc",
-  WELCOME: process.env.WELCOME !== undefined ? process.env.WELCOME === 'true' : false, 
+  WELCOME: process.env.WELCOME !== undefined ? process.env.WELCOME === 'true' : false,
+  ANTI_STICKER: process.env.ANTI_STICKER !== undefined ? process.env.ANTI_STICKER === 'true' : false,
 };
 
 
