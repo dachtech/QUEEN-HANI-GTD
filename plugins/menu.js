@@ -6,151 +6,180 @@ const { generateWAMessageFromContent, proto } = pkg;
 import config from '../config.cjs';
 import axios from 'axios';
 
-// Get total memory and free memory in bytes
+// ─── System Info ───────────────────────────────
 const totalMemoryBytes = os.totalmem();
 const freeMemoryBytes = os.freemem();
 
-// Define unit conversions
-const byteToKB = 1 / 1024;
-const byteToMB = byteToKB / 1024;
-const byteToGB = byteToMB / 1024;
-
-// Function to format bytes to a human-readable format
 function formatBytes(bytes) {
-  if (bytes >= Math.pow(1024, 3)) {
-    return (bytes * byteToGB).toFixed(2) + ' GB';
-  } else if (bytes >= Math.pow(1024, 2)) {
-    return (bytes * byteToMB).toFixed(2) + ' MB';
-  } else if (bytes >= 1024) {
-    return (bytes * byteToKB).toFixed(2) + ' KB';
-  } else {
-    return bytes.toFixed(2) + ' bytes';
-  }
+  if (bytes >= 1e9) return (bytes / 1e9).toFixed(2) + ' GB';
+  if (bytes >= 1e6) return (bytes / 1e6).toFixed(2) + ' MB';
+  if (bytes >= 1e3) return (bytes / 1e3).toFixed(2) + ' KB';
+  return bytes.toFixed(2) + ' B';
 }
 
-// Bot Process Time
+// ─── Uptime ───────────────────────────────
 const uptime = process.uptime();
-const day = Math.floor(uptime / (24 * 3600));
-const hours = Math.floor((uptime % (24 * 3600)) / 3600);
+const day = Math.floor(uptime / 86400);
+const hours = Math.floor((uptime % 86400) / 3600);
 const minutes = Math.floor((uptime % 3600) / 60);
 const seconds = Math.floor(uptime % 60);
 
-// Uptime
-const uptimeMessage = `*I am alive now since ${day}d ${hours}h ${minutes}m ${seconds}s*`;
-const runMessage = `*☀️ ${day} Day*\n*🕐 ${hours} Hour*\n*⏰ ${minutes} Minutes*\n*⏱️ ${seconds} Seconds*\n`;
+// ─── Greeting ───────────────────────────────
+const timeNow = moment().tz("Asia/Colombo").format("HH:mm:ss");
+const dateNow = moment().tz("Asia/Colombo").format("DD/MM/YYYY");
+let wish = "";
 
-const xtime = moment.tz("Asia/Colombo").format("HH:mm:ss");
-const xdate = moment.tz("Asia/Colombo").format("DD/MM/YYYY");
-const time2 = moment().tz("Asia/Colombo").format("HH:mm:ss");
-let pushwish = "";
+if (timeNow < "05:00:00") wish = "🌄 Good Morning";
+else if (timeNow < "11:00:00") wish = "☀️ Good Morning";
+else if (timeNow < "15:00:00") wish = "🌤️ Good Afternoon";
+else if (timeNow < "18:00:00") wish = "🌇 Good Evening";
+else wish = "🌙 Good Night";
 
-if (time2 < "05:00:00") {
-  pushwish = `💙Good Morning 🌄`;
-} else if (time2 < "11:00:00") {
-  pushwish = `💙Good Morning 🌄`;
-} else if (time2 < "15:00:00") {
-  pushwish = `💙Good Afternoon 🌅`;
-} else if (time2 < "18:00:00") {
-  pushwish = `💙Good Evening 🌃`;
-} else if (time2 < "19:00:00") {
-  pushwish = `💙Good Evening 🌃`;
-} else {
-  pushwish = `💙Good Night 🌌`;
-}
-
+// ─── Menu Command ───────────────────────────────
 const menu = async (m, Matrix) => {
   const prefix = config.PREFIX;
   const cmd = m.body.startsWith(prefix)
     ? m.body.slice(prefix.length).split(' ')[0].toLowerCase()
     : '';
-  const mode = config.MODE === 'public' ? 'public' : 'private';
-  const pref = config.PREFIX;
-
-  const validCommands = ['fullmenu', 'menu', 'listcmd'];
+  const mode = config.MODE === 'public' ? '🌍 Public' : '🔒 Private';
+  const validCommands = ['menu', 'fullmenu', 'listcmd'];
 
   if (validCommands.includes(cmd)) {
     const str = `
-┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
-┃ 🌐 *${config.BOT_NAME.toUpperCase()}*  •  v3.1.0
-┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
-👑 Owner: *${config.OWNER_NAME}*
-🙋‍♂️ User: *${m.pushName}*
-⚙️ Mode: *${mode}*
-💻 Platform: *${os.platform()}*
-💙 Prefix: [${prefix}]
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-${pushwish}, *${m.pushName}*! 💫
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+╭───────────────╮
+│ *${config.BOT_NAME.toUpperCase()} v3.1.0* │
+╰───────────────╯
+👑 Owner: ${config.OWNER_NAME}
+🙋‍♂️ User: ${m.pushName}
+⚙️ Mode: ${mode}
+💻 Platform: ${os.platform()}
+💙 Prefix: ${prefix}
+📅 ${dateNow} | 🕐 ${timeNow}
+─────────────────────
+${wish}, ${m.pushName}!
+🕒 Uptime: ${day}d ${hours}h ${minutes}m ${seconds}s
+💾 RAM: ${formatBytes(totalMemoryBytes - freeMemoryBytes)} / ${formatBytes(totalMemoryBytes)}
+─────────────────────
 
-╔═══《 📥 DOWNLOAD MENU 》═══╗
-║ 🎯 apk, facebook, mediafire
-║ 🎯 pinterestdl, gitclone, gdrive
-║ 🎯 insta, ytmp3, ytmp4, play, song
-║ 🎯 video, ytmp3doc, ytmp4doc, tiktok
-╚════════════════════════════╝
+╭─「 📥 DOWNLOAD 」─╮
+│ apk
+│ facebook
+│ mediafire
+│ pinterestdl
+│ gitclone
+│ gdrive
+│ insta
+│ ytmp3
+│ ytmp4
+│ play
+│ song
+│ video
+│ tiktok
+╰───────────────────╯
 
-╔═══《 🧭 CONVERTER MENU 》═══╗
-║ 🧩 attp, attp2, attp3
-║ 🧩 ebinary, dbinary, emojimix, mp3
-╚════════════════════════════╝
+╭─「 🧭 CONVERTER 」─╮
+│ attp
+│ attp2
+│ attp3
+│ ebinary
+│ dbinary
+│ emojimix
+│ mp3
+╰────────────────────╯
 
-╔═══《 🤖 AI MENU 》═══╗
-║ 💡 ai, bug, report, gpt
-║ 💡 dalle, remini, gemini
-╚════════════════════════════╝
+╭─「 🤖 AI 」─╮
+│ ai
+│ dalle
+│ remini
+│ gemini
+│ gpt
+│ bug
+│ report
+╰────────────╯
 
-╔═══《 🧰 TOOLS MENU 》═══╗
-║ 🛠️ calculator, tempmail, checkmail
-║ 🛠️ trt, tts
-╚════════════════════════════╝
+╭─「 🧰 TOOLS 」─╮
+│ calculator
+│ tempmail
+│ checkmail
+│ trt
+│ tts
+╰─────────────╯
 
-╔═══《 👥 GROUP MENU 》═══╗
-║ 💬 linkgroup, setppgc, setname, setdesc
-║ 💬 group, gcsetting, welcome
-║ 💬 add, kick, hidetag, tagall
-║ 💬 antilink, antitoxic, promote, demote, getbio
-╚════════════════════════════╝
+╭─「 👥 GROUP 」─╮
+│ linkgroup
+│ setppgc
+│ setname
+│ setdesc
+│ group
+│ welcome
+│ add
+│ kick
+│ tagall
+│ antilink
+│ promote
+│ demote
+│ getbio
+╰───────────────╯
 
-╔═══《 🔍 SEARCH MENU 》═══╗
-║ 🔎 play, yts, imdb, google, gimage
-║ 🔎 pinterest, wallpaper, wikimedia
-║ 🔎 ytsearch, ringtone, lyrics
-╚════════════════════════════╝
+╭─「 🔍 SEARCH 」─╮
+│ play
+│ yts
+│ imdb
+│ google
+│ gimage
+│ pinterest
+│ wallpaper
+│ lyrics
+╰────────────────╯
 
-╔═══《 🏠 MAIN MENU 》═══╗
-║ ⚡ ping, alive, owner, menu, infobot
-╚════════════════════════════╝
+╭─「 🏠 MAIN 」─╮
+│ ping
+│ alive
+│ owner
+│ menu
+│ infobot
+╰───────────────╯
 
-╔═══《 👑 OWNER MENU 》═══╗
-║ 🔧 join, leave, block, unblock
-║ 🔧 setppbot, anticall, setstatus, setnamebot
-║ 🔧 autotyping, alwaysonline, autoread, autosview
-╚════════════════════════════╝
+╭─「 👑 OWNER 」─╮
+│ join
+│ leave
+│ block
+│ unblock
+│ setppbot
+│ anticall
+│ setstatus
+│ autotyping
+│ alwaysonline
+│ autoread
+│ autosview
+╰──────────────╯
 
-╔═══《 🕵️ STALK MENU 》═══╗
-║ 🧠 truecaller, instastalk, githubstalk
-╚════════════════════════════╝
+╭─「 🕵️ STALK 」─╮
+│ truecaller
+│ instastalk
+│ githubstalk
+╰────────────────╯
 
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+─────────────────────
 💬 *${config.DESCRIPTION}*
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-> ᴍᴀᴅᴇ ᴡɪᴛʜ ʟᴏᴠᴇ ʙʏ ᴅᴀᴄʜ x ᴛᴇᴄʜ 
+─────────────────────
+Made with ❤️ by *DACH × TECH*
+─────────────────────
 `;
 
-    // Check if MENU_IMAGE exists in config and is not empty
+    // ─── Custom Menu Image ───────────────────────────────
+    const imageUrl = 'https://files.catbox.moe/dgunsg.jpg';
     let menuImage;
-    if (config.MENU_IMAGE && config.MENU_IMAGE.trim() !== '') {
-      try {
-        const response = await axios.get(config.MENU_IMAGE, { responseType: 'arraybuffer' });
-        menuImage = Buffer.from(response.data, 'binary');
-      } catch (error) {
-        console.error('Error fetching menu image from URL, falling back to local image:', error);
-        menuImage = fs.readFileSync('./media/popkid.jpg');
-      }
-    } else {
+
+    try {
+      const response = await axios.get(imageUrl, { responseType: 'arraybuffer' });
+      menuImage = Buffer.from(response.data, 'binary');
+    } catch {
+      console.error('❌ Failed to fetch menu image. Using fallback.');
       menuImage = fs.readFileSync('./media/popkid.jpg');
     }
 
+    // ─── Send Messages ───────────────────────────────
     await Matrix.sendMessage(
       m.from,
       {
