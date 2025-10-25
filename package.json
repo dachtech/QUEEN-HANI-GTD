@@ -1,22 +1,22 @@
 {
-  "name": "QUEEN-HANI",
+  "name": "POPKID-BMX",
   "version": "10.8.1",
-  "description": "QUEEN-HANI latest multi device whatsapp bot",
+  "description": "POPKID-BMX latest multi device whatsapp bot",
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "start": "pm2 start index.js --deep-monitoring --attach --name QUEEN-HANI",
-    "stop": "pm2 stop QUEEN-HANI",
-    "restart": "pm2 restart QUEEN-HANI"
+    "start": "pm2 start index.js --deep-monitoring --attach --name POPKID-BMX",
+    "stop": "pm2 stop POPKID-BMX",
+    "restart": "pm2 restart POPKID-BMX"
   },
-  "keywords": ["queen-hani", "whatsapp-bot", "whatsapp md bot"],
-  "author": "Dach Deo",
+  "keywords": ["popkid-bmx", "whatsapp-bot", "whatsapp md bot"],
+  "author": "Popkid",
   "license": "ISC",
   "dependencies": {
     "@ffmpeg-installer/ffmpeg": "^1.1.0",
     "@google/generative-ai": "^0.9.0",
     "@hapi/boom": "^10.0.1",
-    "@whiskeysockets/baileys": "^6.7.16",
+    "@whiskeysockets/baileys": "github:EdderBot02/bail",
     "@xaviabot/fb-downloader": "^1.0.14",
     "acrcloud": "^1.4.0",
     "api-dylux": "^1.8.3",
