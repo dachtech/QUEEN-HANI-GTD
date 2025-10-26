@@ -93,7 +93,7 @@ async function start() {
             browser: ["demon", "safari", "3.3"],
             auth: state,
             getMessage: async (key) => {
-                return { conversation: "popkid whatsapp user bot" };
+                return { conversation: "" };
             }
         });
 
