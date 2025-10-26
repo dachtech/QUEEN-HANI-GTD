@@ -39,7 +39,7 @@ const facebook = async (m, Matrix) => {
         forwardingScore: 999,
         isForwarded: true,
         forwardedNewsletterMessageInfo: {
-          newsletterJid: "120363290715861418@newsletter",
+          newsletterJid: "120363401831624774@newsletter",
           newsletterName: "QUEEN HANI GTD",
           serverMessageId: 144,
         },
