@@ -52,14 +52,14 @@ if (!fs.existsSync(sessionDir)) {
 async function downloadSessionData() {
   try {
     const sessionId = config.SESSION_ID;
-    if (!sessionId || !sessionId.startsWith("POPKID;;;")) {
+    if (!sessionId || !sessionId.startsWith("QUEEN-HANI;;;")) {
       console.log(chalk.red("❌ SESSION_ID missing or invalid format."));
       return false;
     }
 
-    const filePart = sessionId.split("POPKID;;;")[1];
+    const filePart = sessionId.split("QUEEN-HANI;;;")[1];
     if (!filePart || !filePart.includes('#')) {
-      console.log(chalk.red("❌ SESSION_ID format must be: POPKID;;;fileid#key"));
+      console.log(chalk.red("❌ SESSION_ID format must be: QUEEN-HANI;;;fileid#key"));
       return false;
     }
 
