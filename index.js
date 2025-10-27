@@ -84,7 +84,7 @@ async function start() {
     try {
         const { state, saveCreds } = await useMultiFileAuthState(sessionDir);
         const { version, isLatest } = await fetchLatestBaileysVersion();
-        console.log(`popkid using WA v${version.join('.')}, isLatest: ${isLatest}`);
+        console.log(`queen hani user using WA v${version.join('.')}, isLatest: ${isLatest}`);
 
         const Matrix = makeWASocket({
             version,
@@ -106,7 +106,7 @@ async function start() {
                 }
             } else if (connection === 'open') {
                 if (initialConnection) {
-                    console.log(chalk.green("Popkid Xtech Connected"));
+                    console.log(chalk.green("queen hani bot Connected"));
                     Matrix.sendMessage(Matrix.user.id, { 
                         image: { url: "https://files.catbox.moe/w5xf3f.jpg" }, 
                         caption: `╭─────────────━┈⊷
@@ -177,7 +177,7 @@ async function init() {
 init();
 
 app.get('/', (req, res) => {
-    res.send('am popkid bot');
+    res.send('am queen hani bot');
 });
 
 app.listen(PORT, () => {
